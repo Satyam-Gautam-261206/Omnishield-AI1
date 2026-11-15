@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniShiel:D - AI 1.0 (Your AI Engine Expert)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #fda4af;
+      border-radius: 4px;
+    }
+
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4a2040;
+    }
+
+    .bg-ruby-main {
+      background-color: #e11d48;
+    }
+
+    .hover-bg-ruby:hover {
+      background-color: #be123c;
+    }
+
+    .dark .bg-ruby-main {
+      background-color: #d02c91;
+    }
+
+    .dark .hover-bg-ruby:hover {
+      background-color: #8f195e;
+    }
+
+    .text-ruby {
+      color: #e11d48;
+    }
+
+    .dark .text-ruby {
+      color: #d02c91;
+    }
+
+    .border-ruby {
+      border-color: #fecdd3;
+    }
+
+    .dark .border-ruby {
+      border-color: #3b1f27;
+    }
+
+    .bg-ruby-subtle {
+      background-color: #fff1f2;
+    }
+
+    .dark .bg-ruby-subtle {
+      background-color: #241422;
+    }
+  </style>
+</head>
+
+<body
+  class="h-screen flex overflow-hidden bg-slate-50 dark:bg-[#121113] text-slate-900 dark:text-zinc-200 transition-colors duration-200">
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()"
+    class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 z-40 hidden transition-opacity"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed md:static inset-y-0 left-0 w-65 bg-slate-900 dark:bg-[#181619] text-slate-100 flex flex-col justify-between z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0 shadow-xl border-r border-slate-800 dark:border-[#2b2229]">
+    <div class="flex flex-col h-full overflow-hidden">
+
+      <!-- Brand Header -->
+      <div
+        class="p-4 border-b border-slate-800 dark:border-[#2b2229] flex items-center justify-between flex-shrink-0 bg-slate-950 dark:bg-[#141215]">
+        <div class="flex items-center space-x-2.5">
+          <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
+            class="flex-shrink-0">
+            <path d="M50 10 L85 25 V50 C85 70 50 90 50 90 C50 90 15 70 15 50 V25 L50 10 Z" fill="#1e1b4b"
+              class="stroke-[#e11d48] dark:stroke-[#d02c91]" stroke-width="6" stroke-linejoin="round" />
+            <circle cx="42" cy="42" r="6" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <circle cx="58" cy="42" r="6" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <path d="M40 56 C40 68 60 68 60 56 Z" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+          </svg>
+          <div>
+            <div class="flex items-baseline space-x-0.5">
+              <span class="font-extrabold text-white text-xl tracking-tight">OmniShiel</span>
+              <span class="font-extrabold text-ruby text-xl">:D</span>
+            </div>
+            <p
+              class="text-[9px] text-slate-400 dark:text-fuchsia-300/60 font-bold tracking-wider leading-none uppercase mt-0.5">
+              Your AI Engine Expert</p>
+          </div>
+        </div>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- New Chat Button -->
+      <div class="p-3 border-b border-slate-800 dark:border-[#2b2229] flex-shrink-0 bg-slate-900/50 dark:bg-[#181619]">
+        <button onclick="createNewChat()"
+          class="w-full bg-rose-950/40 dark:bg-[#2d172b]/60 hover:bg-rose-900/60 dark:hover:bg-[#3d1e3a] text-rose-300 dark:text-fuchsia-200 border border-rose-800/50 dark:border-[#4d2349]/50 rounded-xl py-2 px-3.5 text-xs font-semibold flex items-center justify-center space-x-2 transition shadow-sm">
+          <i class="fa-solid fa-plus text-[10px]"></i>
+          <span>New Conversation</span>
+        </button>
+      </div>
+
+      <!-- Navigation & Controls -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-5">
+        <div>
+          <button onclick="toggleRecentChats()"
+            class="w-full flex items-center justify-between text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider mb-2 px-1 hover:text-slate-200 transition">
+            <span class="flex items-center space-x-1.5">
+              <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+              <span>Recent Chats</span>
+            </span>
+            <i id="recent-chats-chevron"
+              class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+          </button>
+
+          <div id="history-drawer" class="hidden space-y-1 transition-all duration-300">
+            <div id="history-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- Active Provider Selector -->
+        <div>
+          <label
+            class="text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider block mb-1.5 px-1">Active
+            Provider</label>
+          <select id="active-model" onchange="updatePriorityList()"
+            class="w-full bg-slate-800 dark:bg-[#201d22] border border-slate-700 dark:border-[#2e262d] rounded-lg px-2.5 py-2 text-xs font-medium text-slate-200 dark:text-zinc-200 focus:outline-none focus:border-ruby transition shadow-sm">
+            <option value="gemini">Google Gemini 1.5</option>
+            <option value="openai">OpenAI GPT-4o</option>
+            <option value="claude">Anthropic Claude 3.5</option>
+          </select>
+        </div>
+
+        <!-- Backup Sequence Card -->
+        <div>
+          <label
+            class="text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider block mb-1.5 px-1">Backup
+            Sequence</label>
+          <div
+            class="space-y-2 text-xs text-slate-300 dark:text-zinc-300 bg-slate-800/60 dark:bg-[#1f1c21] p-3 rounded-xl border border-slate-700/60 dark:border-[#2d242c] shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 dark:text-zinc-400 text-[10px] uppercase font-bold">1. Primary</span>
+              <span id="priority-1" class="font-bold text-ruby text-xs">Gemini 1.5</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-700/50 dark:border-[#2d242c] pt-1.5">
+              <span class="text-slate-400 dark:text-zinc-400 text-[10px] uppercase font-bold">2. Failover A</span>
+              <span id="priority-2" class="text-slate-300 dark:text-zinc-300 text-xs">GPT-4o</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-700/50 dark:border-[#2d242c] pt-1.5">
+              <span class="text-slate-400 dark:text-zinc-400 text-[10px] uppercase font-bold">3. Failover B</span>
+              <span id="priority-3" class="text-slate-300 dark:text-zinc-300 text-xs">Claude 3.5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Footer Button -->
+      <div class="p-3 border-t border-slate-800 dark:border-[#2b2229] bg-slate-950 dark:bg-[#141215] flex-shrink-0">
+        <button onclick="openAuthModal()"
+          class="w-full bg-ruby-main hover-bg-ruby text-white font-semibold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center space-x-2 transition shadow-md">
+          <i class="fa-solid fa-right-to-bracket text-xs"></i>
+          <span id="auth-btn-text">Login / Sign Up</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat Workspace -->
+  <main class="flex-1 flex flex-col h-full bg-slate-50 dark:bg-[#121113] transition-colors duration-200">
+    <header
+      class="h-16 border-b border-slate-200 dark:border-[#262025] px-4 md:px-6 flex items-center justify-between bg-white dark:bg-[#161417] shadow-sm transition-colors duration-200">
+      <div class="flex items-center space-x-3.5">
+        <button onclick="toggleSidebar()"
+          class="p-2 rounded-lg border border-slate-200 dark:border-[#2d262c] text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:border-ruby transition">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+
+        <div class="hidden sm:flex items-center space-x-2 mr-2">
+          <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 10 L85 25 V50 C85 70 50 90 50 90 C50 90 15 70 15 50 V25 L50 10 Z"
+              class="fill-rose-50 dark:fill-[#20141f] stroke-[#e11d48] dark:stroke-[#d02c91]" stroke-width="8"
+              stroke-linejoin="round" />
+            <circle cx="42" cy="42" r="8" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <circle cx="58" cy="42" r="8" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <path d="M40 56 C40 68 60 68 60 56 Z" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+          </svg>
+          <span class="text-xl font-bold text-slate-400 dark:text-zinc-400">OmniShiel:D</span>
+        </div>
+
+        <div id="title-display"
+          class="flex items-center space-x-2 group cursor-pointer bg-slate-100 dark:bg-[#1d1a1e] hover:bg-ruby-subtle border border-slate-200 dark:border-[#2d262c] hover:border-ruby rounded-lg px-3 py-1.5 transition"
+          onclick="enableTitleEditing()">
+          <span class="text-xs text-slate-500 dark:text-zinc-400 font-medium">Session:</span>
+          <span id="session-title-text"
+            class="text-xs font-bold text-slate-800 dark:text-zinc-200">#omni-session-001</span>
+          <i class="fa-solid fa-pen text-[9px] text-slate-400 group-hover:text-ruby transition ml-0.5"></i>
+        </div>
+
+        <div id="title-edit-container" class="hidden flex items-center space-x-2">
+          <input type="text" id="session-title-input"
+            class="bg-white dark:bg-[#1d1a1e] border border-rose-300 dark:border-[#3d2739] text-xs px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-500 dark:focus:ring-fuchsia-400 font-mono text-slate-800 dark:text-zinc-100"
+            onkeydown="handleTitleKeyDown(event)" />
+          <button onclick="saveSessionTitle()"
+            class="text-ruby hover:text-rose-700 dark:hover:text-fuchsia-300 p-1 text-xs">
+            <i class="fa-solid fa-check"></i>
+          </button>
+          <button onclick="cancelTitleEditing()" class="text-slate-400 hover:text-slate-600 p-1 text-xs">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleTheme()"
+          class="p-2 rounded-lg border border-slate-200 dark:border-[#2d262c] text-slate-600 dark:text-zinc-300 hover:text-ruby dark:hover:text-ruby hover:border-ruby transition flex items-center justify-center">
+          <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+        </button>
+
+        <button onclick="clearChat()"
+          class="text-xs text-slate-600 dark:text-zinc-300 hover:text-ruby transition flex items-center space-x-1.5 px-3 py-2 rounded-lg border border-slate-200 dark:border-[#2d262c] bg-white dark:bg-[#181619] hover:border-ruby shadow-sm">
+          <i class="fa-solid fa-trash text-[10px]"></i>
+          <span class="hidden sm:inline font-medium">Clear Chat</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Scroll Container -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
+      <div class="flex items-start space-x-3.5 max-w-3xl">
+        <div
+          class="w-8 h-8 rounded-lg bg-ruby-subtle border border-rose-200 dark:border-[#3b1f37] text-ruby flex items-center justify-center text-sm font-bold flex-shrink-0">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div
+          class="bg-white dark:bg-[#181619] border border-slate-200 dark:border-[#282127] rounded-2xl p-4 text-sm text-slate-700 dark:text-zinc-200 space-y-2 shadow-sm">
+          <p class="font-extrabold text-ruby tracking-tight flex items-center space-x-1.5">
+            <span>OmniShiel:D AI Ready</span>
+          </p>
+          <p class="text-slate-600 dark:text-zinc-300 leading-relaxed text-[13px]">I route your requests across
+            different AI Engines.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Input Box -->
+    <div
+      class="p-4 border-t border-slate-200 dark:border-[#262025] bg-white dark:bg-[#161417] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] transition-colors duration-200">
+      <form id="chat-form" onsubmit="handleSendMessage(event)"
+        class="max-w-4xl mx-auto flex items-center bg-slate-50 dark:bg-[#1d1a1e] border border-slate-200 dark:border-[#2e262d] rounded-xl px-3 py-2 focus-within:border-ruby focus-within:bg-white dark:focus-within:bg-[#221f24] transition-all duration-200 shadow-inner space-x-2">
+        <div
+          class="flex items-center space-x-1.5 bg-slate-200/80 dark:bg-[#2b1b28] border border-slate-300 dark:border-[#3d2539] px-2.5 py-1 rounded-lg flex-shrink-0">
+          <span class="relative flex h-2 w-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 dark:bg-fuchsia-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-ruby-main"></span>
+          </span>
+          <span class="text-[9px] font-bold text-slate-700 dark:text-fuchsia-200 tracking-wide uppercase">OMNI
+            ACTIVE</span>
+        </div>
+
+        <div class="h-5 w-[1px] bg-slate-300 dark:bg-[#3d2e3b] mx-1 flex-shrink-0"></div>
+
+        <input type="text" id="user-input" placeholder="Ask anything...:D"
+          class="flex-1 bg-transparent text-sm text-slate-800 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none py-1.5 px-2"
+          required />
+        <button type="submit"
+          class="bg-ruby-main hover-bg-ruby text-white rounded-lg px-7 py-2 text-xs font-semibold tracking-wide transition flex items-center space-x-2 shadow-sm flex-shrink-0">
+          <span>Send</span>
+          <i class="fa-solid fa-paper-plane text-[9px]"></i>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Login / Sign Up Modal Interface -->
+  <div id="auth-modal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm hidden transition-opacity">
+    <div
+      class="bg-white dark:bg-[#181619] border border-slate-200 dark:border-[#2d242c] rounded-2xl w-full max-w-md p-6 shadow-2xl relative transition-all mx-4">
+
+      <button onclick="closeAuthModal()"
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 p-1 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="flex justify-center mb-2">
+          <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 10 L85 25 V50 C85 70 50 90 50 90 C50 90 15 70 15 50 V25 L50 10 Z"
+              class="fill-rose-50 dark:fill-[#20141f] stroke-[#e11d48] dark:stroke-[#d02c91]" stroke-width="8"
+              stroke-linejoin="round" />
+            <circle cx="42" cy="42" r="8" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <circle cx="58" cy="42" r="8" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+            <path d="M40 56 C40 68 60 68 60 56 Z" class="fill-[#e11d48] dark:fill-[#d02c91]" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-zinc-100 tracking-tight">OmniShield:D AI</h3>
+        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">Access unified multi-engine AI models</p>
+      </div>
+
+      <div class="flex bg-slate-100 dark:bg-[#201d22] p-1 rounded-xl mb-6">
+        <button id="tab-signin" onclick="switchAuthTab('signin')"
+          class="flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white dark:bg-[#181619] text-slate-900 dark:text-zinc-100 shadow-sm">
+          Sign In
+        </button>
+        <button id="tab-signup" onclick="switchAuthTab('signup')"
+          class="flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200">
+          Create Account
+        </button>
+      </div>
+
+      <div class="space-y-2 mb-4">
+        <button onclick="handleSocialAuth('Google')"
+          class="w-full flex items-center justify-center space-x-2.5 bg-slate-50 dark:bg-[#201d22] hover:bg-slate-100 dark:hover:bg-[#28242a] border border-slate-200 dark:border-[#2e262d] py-2 px-4 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-200 transition">
+          <i class="fa-brands fa-google text-rose-500"></i>
+          <span>Continue with Google</span>
+        </button>
+        <button onclick="handleSocialAuth('GitHub')"
+          class="w-full flex items-center justify-center space-x-2.5 bg-slate-50 dark:bg-[#201d22] hover:bg-slate-100 dark:hover:bg-[#28242a] border border-slate-200 dark:border-[#2e262d] py-2 px-4 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-200 transition">
+          <i class="fa-brands fa-github text-slate-900 dark:text-white"></i>
+          <span>Continue with GitHub</span>
+        </button>
+      </div>
+
+      <div class="relative flex items-center justify-center my-4">
+        <div class="border-t border-slate-200 dark:border-[#2e262d] w-full"></div>
+        <span
+          class="bg-white dark:bg-[#181619] px-3 text-[10px] uppercase font-bold text-slate-400 dark:text-zinc-500 absolute">or</span>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" onsubmit="submitAuthForm(event, 'signin')" class="space-y-3.5">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-zinc-400 mb-1">Email Address</label>
+          <input type="email" required placeholder="you@example.com"
+            class="w-full bg-slate-50 dark:bg-[#201d22] border border-slate-200 dark:border-[#2e262d] rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-zinc-100 focus:outline-none focus:border-ruby transition" />
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-[11px] font-bold text-slate-600 dark:text-zinc-400">Password</label>
+            <a href="#" onclick="alert('Password reset link sent!')"
+              class="text-[10px] font-semibold text-ruby hover:underline">Forgot?</a>
+          </div>
+          <div class="relative">
+            <input id="signin-password" type="password" required placeholder="••••••••"
+              class="w-full bg-slate-50 dark:bg-[#201d22] border border-slate-200 dark:border-[#2e262d] rounded-xl pl-3 pr-8 py-2 text-xs text-slate-800 dark:text-zinc-100 focus:outline-none focus:border-ruby transition" />
+            <button type="button" onclick="togglePasswordVisibility('signin-password')"
+              class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full bg-ruby-main hover-bg-ruby text-white font-semibold text-xs py-2.5 rounded-xl shadow-md transition mt-2">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="form-signup" onsubmit="submitAuthForm(event, 'signup')" class="space-y-3.5 hidden">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-zinc-400 mb-1">Full Name</label>
+          <input type="text" required placeholder="User Name"
+            class="w-full bg-slate-50 dark:bg-[#201d22] border border-slate-200 dark:border-[#2e262d] rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-zinc-100 focus:outline-none focus:border-ruby transition" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-zinc-400 mb-1">Email Address</label>
+          <input type="email" required placeholder="you@example.com"
+            class="w-full bg-slate-50 dark:bg-[#201d22] border border-slate-200 dark:border-[#2e262d] rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-zinc-100 focus:outline-none focus:border-ruby transition" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 dark:text-zinc-400 mb-1">Password</label>
+          <div class="relative">
+            <input id="signup-password" type="password" required placeholder="At least 8 characters"
+              class="w-full bg-slate-50 dark:bg-[#201d22] border border-slate-200 dark:border-[#2e262d] rounded-xl pl-3 pr-8 py-2 text-xs text-slate-800 dark:text-zinc-100 focus:outline-none focus:border-ruby transition" />
+            <button type="button" onclick="togglePasswordVisibility('signup-password')"
+              class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full bg-ruby-main hover-bg-ruby text-white font-semibold text-xs py-2.5 rounded-xl shadow-md transition mt-2">
+          Create Account
+        </button>
+      </form>
+
+      <p class="text-[10px] text-center text-slate-400 dark:text-zinc-500 mt-4 leading-relaxed">
+        By continuing, you agree to OmniShield:D's <a href="#" class="underline hover:text-slate-600">Terms of
+          Service</a> & <a href="#" class="underline hover:text-slate-600">Privacy Policy</a>.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let conversations = [
+      { id: 'session-001', title: '#omni-session-001', messages: [] }
+    ];
+    let activeSessionId = 'session-001';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderHistoryList();
+    });
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon').className = 'fa-solid fa-sun text-xs text-amber-400';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('theme-icon').className = 'fa-solid fa-moon text-xs';
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      const themeIcon = document.getElementById('theme-icon');
+
+      if (isDark) {
+        localStorage.setItem('theme', 'dark');
+        themeIcon.className = 'fa-solid fa-sun text-xs text-amber-400';
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeIcon.className = 'fa-solid fa-moon text-xs';
+      }
+      renderHistoryList();
+    }
+
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthTab(type) {
+      const tabSignin = document.getElementById('tab-signin');
+      const tabSignup = document.getElementById('tab-signup');
+      const formSignin = document.getElementById('form-signin');
+      const formSignup = document.getElementById('form-signup');
+
+      if (type === 'signin') {
+        tabSignin.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white dark:bg-[#181619] text-slate-900 dark:text-zinc-100 shadow-sm";
+        tabSignup.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200";
+        formSignin.classList.remove('hidden');
+        formSignup.classList.add('hidden');
+      } else {
+        tabSignup.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white dark:bg-[#181619] text-slate-900 dark:text-zinc-100 shadow-sm";
+        tabSignin.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200";
+        formSignup.classList.remove('hidden');
+        formSignin.classList.add('hidden');
+      }
+    }
+
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function handleSocialAuth(provider) {
+      alert(`Connecting to ${provider} OAuth...`);
+    }
+
+    async function submitAuthForm(e, type) {
+      e.preventDefault();
+      const isSignIn = type === 'signin';
+      const endpoint = isSignIn
+        ? 'http://127.0.0.1:8000/api/auth/login'
+        : 'http://127.0.0.1:8000/api/auth/signup';
+
+      const payload = isSignIn ? {
+        email: e.target.querySelector('input[type="email"]').value,
+        password: e.target.querySelector('input[type="password"]').value
+      } : {
+        full_name: e.target.querySelector('input[placeholder="User Name"]').value,
+        email: e.target.querySelector('input[type="email"]').value,
+        password: e.target.querySelector('input[type="password"]').value
+      };
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('access_token', data.access_token);
+          document.getElementById('auth-btn-text').innerText = data.user_name || "Account Active";
+          alert(`Successfully ${isSignIn ? 'Signed In' : 'Registered'}!`);
+          closeAuthModal();
+        } else {
+          alert(data.detail || "Authentication failed.");
+        }
+      } catch (error) {
+        alert("Could not connect to authentication server. Ensure Node.js server is running on port 8000.");
+      }
+    }
+
+    function toggleRecentChats() {
+      const drawer = document.getElementById('history-drawer');
+      const chevron = document.getElementById('recent-chats-chevron');
+      drawer.classList.toggle('hidden');
+      chevron.classList.toggle('rotate-180');
+    }
+
+    function renderHistoryList() {
+      const listEl = document.getElementById('history-list');
+      listEl.innerHTML = '';
+      const isDark = document.documentElement.classList.contains('dark');
+
+      conversations.forEach((session) => {
+        const isActive = session.id === activeSessionId;
+        const item = document.createElement('div');
+
+        const activeClass = isDark
+          ? 'bg-[#2a1b28] border border-[#40243d] text-fuchsia-200 font-semibold shadow-sm'
+          : 'bg-rose-950/60 border border-rose-800/60 text-rose-200 font-semibold shadow-sm';
+
+        item.className = `group flex items-center justify-between p-2 rounded-xl text-xs cursor-pointer transition ${isActive
+            ? activeClass
+            : 'text-slate-400 dark:text-zinc-400 hover:bg-slate-800 dark:hover:bg-[#201c22] hover:text-slate-200 dark:hover:text-zinc-100 border border-transparent'
+          }`;
+
+        item.onclick = () => switchSession(session.id);
+
+        item.innerHTML = `
+          <div class="flex items-center space-x-2 truncate flex-1">
+            <i class="fa-regular fa-message text-[10px] ${isActive ? 'text-ruby' : 'text-slate-500'}"></i>
+            <span class="truncate">${escapeHtml(session.title)}</span>
+          </div>
+          ${conversations.length > 1 ? `
+            <button onclick="deleteSession(event, '${session.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-ruby p-1 transition ml-1">
+              <i class="fa-solid fa-trash text-[9px]"></i>
+            </button>
+          ` : ''}
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function createNewChat() {
+      const newId = 'session-' + String(Date.now()).slice(-4);
+      const newTitle = `#omni-${newId}`;
+      conversations.unshift({ id: newId, title: newTitle, messages: [] });
+      switchSession(newId);
+    }
+
+    function switchSession(sessionId) {
+      activeSessionId = sessionId;
+      const current = conversations.find(s => s.id === activeSessionId);
+      if (!current) return;
+
+      document.getElementById('session-title-text').innerText = current.title;
+      renderChatMessages(current.messages);
+      renderHistoryList();
+    }
+
+    function deleteSession(e, sessionId) {
+      e.stopPropagation();
+      if (conversations.length <= 1) return;
+
+      conversations = conversations.filter(s => s.id !== sessionId);
+      if (activeSessionId === sessionId) {
+        switchSession(conversations[0].id);
+      } else {
+        renderHistoryList();
+      }
+    }
+
+    function renderChatMessages(messages) {
+      const chatContainer = document.getElementById('chat-container');
+      if (messages.length === 0) {
+        chatContainer.innerHTML = `
+          <div class="flex items-start space-x-3.5 max-w-3xl">
+            <div class="w-8 h-8 rounded-lg bg-ruby-subtle border border-rose-200 dark:border-[#3b1f37] text-ruby flex items-center justify-center text-sm font-bold flex-shrink-0">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="bg-white dark:bg-[#181619] border border-slate-200 dark:border-[#282127] rounded-2xl p-4 text-sm text-slate-700 dark:text-zinc-200 space-y-2 shadow-sm">
+              <p class="font-extrabold text-ruby tracking-tight flex items-center space-x-1.5">
+                <span>OmniShiel:D AI Ready</span>
+              </p>
+              <p class="text-slate-600 dark:text-zinc-300 leading-relaxed text-[13px]">I route your requests across different AI Engines.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      chatContainer.innerHTML = '';
+      messages.forEach(msg => appendMessageUI(msg.sender, msg.text, msg.provider));
+    }
+
+    function enableTitleEditing() {
+      const display = document.getElementById('title-display');
+      const container = document.getElementById('title-edit-container');
+      const input = document.getElementById('session-title-input');
+
+      const current = conversations.find(s => s.id === activeSessionId);
+      input.value = current ? current.title : "#omni-session-001";
+
+      display.classList.add('hidden');
+      container.classList.remove('hidden');
+      input.focus();
+      input.select();
+    }
+
+    function saveSessionTitle() {
+      const input = document.getElementById('session-title-input');
+      const newTitle = input.value.trim();
+
+      if (newTitle) {
+        const current = conversations.find(s => s.id === activeSessionId);
+        if (current) {
+          current.title = newTitle;
+          document.getElementById('session-title-text').innerText = newTitle;
+          renderHistoryList();
+        }
+      }
+      cancelTitleEditing();
+    }
+
+    function cancelTitleEditing() {
+      document.getElementById('title-display').classList.remove('hidden');
+      document.getElementById('title-edit-container').classList.add('hidden');
+    }
+
+    function handleTitleKeyDown(e) {
+      if (e.key === 'Enter') saveSessionTitle();
+      else if (e.key === 'Escape') cancelTitleEditing();
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+      if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      } else {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+    }
+
+    function updatePriorityList() {
+      const active = document.getElementById('active-model').value;
+      const p1 = document.getElementById('priority-1');
+      const p2 = document.getElementById('priority-2');
+      const p3 = document.getElementById('priority-3');
+
+      if (active === 'gemini') {
+        p1.innerText = 'Gemini 1.5';
+        p2.innerText = 'GPT-4o';
+        p3.innerText = 'Claude 3.5';
+      } else if (active === 'openai') {
+        p1.innerText = 'GPT-4o';
+        p2.innerText = 'Gemini 1.5';
+        p3.innerText = 'Claude 3.5';
+      } else {
+        p1.innerText = 'Claude 3.5';
+        p2.innerText = 'Gemini 1.5';
+        p3.innerText = 'GPT-4o';
+      }
+    }
+
+    function clearChat() {
+      const current = conversations.find(s => s.id === activeSessionId);
+      if (current) {
+        current.messages = [];
+        renderChatMessages([]);
+      }
+    }
+
+    async function handleSendMessage(e) {
+      e.preventDefault();
+      const inputEl = document.getElementById('user-input');
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      const current = conversations.find(s => s.id === activeSessionId);
+      if (!current) return;
+
+      const userMsg = { sender: 'user', text };
+      current.messages.push(userMsg);
+      appendMessageUI('user', text);
+      inputEl.value = '';
+
+      const activeModel = document.getElementById('active-model').value;
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/chat/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: activeSessionId,
+            message: text,
+            primary_provider: activeModel
+          })
+        });
+
+        if (!res.ok) throw new Error("Server error");
+
+        const data = await res.json();
+
+        const assistantMsg = {
+          sender: 'assistant',
+          text: data.response_text,
+          provider: data.provider_used
+        };
+        current.messages.push(assistantMsg);
+        appendMessageUI('assistant', data.response_text, data.provider_used);
+
+      } catch (err) {
+        appendMessageUI('assistant', 'Unable to reach backend server. Make sure Node.js is running on port 8000.', 'OmniShield Error');
+      }
+    }
+
+    function appendMessageUI(sender, text, providerName = 'OmniShield') {
+      const chatContainer = document.getElementById('chat-container');
+      const messageDiv = document.createElement('div');
+
+      if (sender === 'user') {
+        messageDiv.className = 'flex justify-end';
+        messageDiv.innerHTML = `
+        <div class="bg-ruby-main text-white rounded-2xl py-2.5 px-4 text-sm max-w-xl shadow-md font-medium leading-relaxed">
+          ${escapeHtml(text)}
+        </div>
+      `;
+      } else {
+        // Parse markdown formatting into clean HTML
+        const formattedText = typeof marked !== 'undefined' ? marked.parse(text) : escapeHtml(text);
+
+        messageDiv.className = 'flex items-start space-x-3.5 max-w-3xl';
+        messageDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-white dark:bg-[#181619] border border-slate-200 dark:border-[#2d262c] flex items-center justify-center text-sm font-bold flex-shrink-0 text-ruby shadow-sm">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="bg-white dark:bg-[#181619] border border-slate-200 dark:border-[#282127] rounded-2xl p-4 text-sm text-slate-700 dark:text-zinc-200 space-y-1 shadow-sm leading-relaxed">
+          <div class="text-[10px] font-bold text-ruby uppercase tracking-wide flex items-center space-x-1">
+            <i class="fa-solid fa-server text-[9px]"></i>
+            <span>${providerName}</span>
+          </div>
+          <div class="leading-relaxed text-slate-600 dark:text-zinc-300 text-[13px]">${formattedText}</div>
+        </div>
+      `;
+      }
+
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+    }
+  </script>
+</body>
+
+</html>
